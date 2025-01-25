@@ -1,4 +1,4 @@
-package OOP_part2;
+package Assignment_3_2;
 
 public class Skyscraper_task3 {
     private int floorsCount;

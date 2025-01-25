@@ -1,4 +1,4 @@
-package OOP_part2;
+package Assignment_3_2;
 
 public class Skyscraper_task2 {
     public static final String SKYSCRAPER_WAS_BUILD = "Skyscraper is built.";

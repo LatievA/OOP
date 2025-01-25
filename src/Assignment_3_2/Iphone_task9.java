@@ -1,4 +1,4 @@
-package OOP_part2;
+package Assignment_3_2;
 
 public class Iphone_task9 {
     private String model;

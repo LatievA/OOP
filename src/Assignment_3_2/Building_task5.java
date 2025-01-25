@@ -1,4 +1,4 @@
-package OOP_part2;
+package Assignment_3_2;
 
 public class Building_task5 {
     private String type;

@@ -1,4 +1,4 @@
-package OOP_part2;
+package Assignment_3_2;
 
 public class Bugatti_task6 {
     private String color = "BLACK";

@@ -1,4 +1,4 @@
-package OOP_part2;
+package Assignment_3_2;
 
 public class Programmer_task7 {
     private int salary = 1000;
