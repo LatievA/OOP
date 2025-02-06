@@ -1,7 +1,6 @@
 package Assignment_4;
 
 public class Account {
-
     private String accountNumber;
     private String pinCode;
     private double balance;

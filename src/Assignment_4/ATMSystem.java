@@ -1,26 +1,78 @@
 package Assignment_4;
 
-public class ATMSystem {
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+
+public class ATMSystem extends JFrame {
+    private JTextField pinField, amountField;
+    private JButton withdrawButton, checkBalanceButton;
+    private JTextArea outputArea;
+    private Bank bank;
+
+    public ATMSystem(Bank bank) {
+        this.bank = bank;
+        setTitle("ATM System");
+        setSize(400, 300);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(new FlowLayout());
+
+        JLabel pinLabel = new JLabel("Enter PIN:");
+        pinField = new JTextField(10);
+        JLabel amountLabel = new JLabel("Amount:");
+        amountField = new JTextField(10);
+        withdrawButton = new JButton("Withdraw");
+        checkBalanceButton = new JButton("Check Balance");
+        outputArea = new JTextArea(5, 30);
+        outputArea.setEditable(false);
+
+        add(pinLabel);
+        add(pinField);
+        add(amountLabel);
+        add(amountField);
+        add(withdrawButton);
+        add(checkBalanceButton);
+        add(new JScrollPane(outputArea));
+
+        withdrawButton.addActionListener(e -> withdrawMoney());
+        checkBalanceButton.addActionListener(e -> checkBalance());
+
+        setVisible(true);
+    }
+
+    private void withdrawMoney() {
+        String pin = pinField.getText();
+        double amount = Double.parseDouble(amountField.getText());
+        for (Account account : bank.getAccounts()) {
+            if (account.getPinCode().equals(pin)) {
+                if (account.withdrawFromAccount(amount)) {
+                    outputArea.setText("Withdrawal successful! New balance: " + account.getBalance());
+                } else {
+                    outputArea.setText("Insufficient funds.");
+                }
+                return;
+            }
+        }
+        outputArea.setText("Invalid PIN.");
+    }
+
+    private void checkBalance() {
+        String pin = pinField.getText();
+        for (Account account : bank.getAccounts()) {
+            if (account.getPinCode().equals(pin)) {
+                outputArea.setText("Current balance: " + account.getBalance());
+                return;
+            }
+        }
+        outputArea.setText("Invalid PIN.");
+    }
+
     public static void main(String[] args) {
-        // Create Bank
         Bank bank = new Bank("Global Bank");
-
-        // Create Accounts
-        Account account1 = new Account("123456789", "1111", 500.0, bank);
-        Account account2 = new Account("987654321", "2222", 1000.0, bank);
-
-        // Create ATMs
-        ATM atm1 = new ATM("ATM001", "123 Main St", bank);
-        ATM atm2 = new ATM("ATM002", "456 Elm St", bank);
-        ATM atm3 = new ATM("ATM003", "789 Oak St", bank);
-
-        // Display account balance before withdrawal
-        System.out.println("Initial balance: " + account1.getBalance());
-
-        // Withdraw money from an account via ATM
-        atm1.withdrawMoney("1111", 200.0);
-
-        // Display account balance after withdrawal
-        System.out.println("Balance after withdrawal: " + account1.getBalance());
+        new Account("123456789", "1111", 500.0, bank);
+        new Account("987654321", "2222", 1000.0, bank);
+        new ATM("ATM001", "123 Main St", bank);
+        new ATMSystem(bank);
     }
 }
