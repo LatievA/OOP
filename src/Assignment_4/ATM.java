@@ -12,25 +12,17 @@ public class ATM {
         bank.addATM(this);
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public Bank getBank() {
-        return bank;
-    }
-
     public void withdrawMoney(String pinCode, double amount) {
         for (Account account : bank.getAccounts()) {
             if (account.getPinCode().equals(pinCode)) {
-                account.withdrawFromAccount(amount);
+                if (account.withdrawFromAccount(amount)) {
+                    System.out.println("Withdrawal successful! New balance: " + account.getBalance());
+                } else {
+                    System.out.println("Insufficient funds.");
+                }
                 return;
             }
         }
-        System.out.println("Invalid PIN. Transaction failed.");
+        System.out.println("Invalid PIN.");
     }
 }

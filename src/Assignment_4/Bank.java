@@ -30,10 +30,6 @@ public class Bank {
         accounts.add(account);
     }
 
-    public void removeAccount(Account account) {
-        accounts.remove(account);
-    }
-
     public void addATM(ATM atm) {
         atms.add(atm);
     }

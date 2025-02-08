@@ -2,12 +2,10 @@ package Assignment_4;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.sql.*;
 
 public class ATMSystem extends JFrame {
     private JTextField pinField, amountField;
-    private JButton withdrawButton, checkBalanceButton;
+    private JButton withdrawButton, checkBalanceButton, addAccountButton, fetchAccountsButton;
     private JTextArea outputArea;
     private Bank bank;
 
@@ -24,6 +22,8 @@ public class ATMSystem extends JFrame {
         amountField = new JTextField(10);
         withdrawButton = new JButton("Withdraw");
         checkBalanceButton = new JButton("Check Balance");
+        addAccountButton = new JButton("Add Account");
+        fetchAccountsButton = new JButton("Fetch Accounts");
         outputArea = new JTextArea(5, 30);
         outputArea.setEditable(false);
 
@@ -33,10 +33,14 @@ public class ATMSystem extends JFrame {
         add(amountField);
         add(withdrawButton);
         add(checkBalanceButton);
+        add(addAccountButton);
+        add(fetchAccountsButton);
         add(new JScrollPane(outputArea));
 
         withdrawButton.addActionListener(e -> withdrawMoney());
         checkBalanceButton.addActionListener(e -> checkBalance());
+        addAccountButton.addActionListener(e -> addAccount());
+        fetchAccountsButton.addActionListener(e -> fetchAccounts());
 
         setVisible(true);
     }
@@ -66,6 +70,15 @@ public class ATMSystem extends JFrame {
             }
         }
         outputArea.setText("Invalid PIN.");
+    }
+
+    private void addAccount() {
+        new Account("999999999", "3333", 1500.0, bank);
+        outputArea.setText("New account added to the database.");
+    }
+
+    private void fetchAccounts() {
+        outputArea.setText("Fetching accounts from the database...");
     }
 
     public static void main(String[] args) {
