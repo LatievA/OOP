@@ -17,7 +17,7 @@ public class Account {
         saveToDatabase();
     }
 
-    private void saveToDatabase() {
+    public void saveToDatabase() {
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement checkStmt = conn.prepareStatement("SELECT COUNT(*) FROM accounts WHERE account_number = ?")) {
 
@@ -30,7 +30,7 @@ public class Account {
                 return;
             }
 
-            try (PreparedStatement stmt = conn.prepareStatement("INSERT INTO accounts (account_number, pin, balance) VALUES (?, ?, ?)")) {
+            try (PreparedStatement stmt = conn.prepareStatement("INSERT INTO accounts (account_number, pin, balance) VALUES (?, ?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
                 stmt.setString(1, accountNumber);
                 stmt.setString(2, pinCode);
                 stmt.setDouble(3, balance);
@@ -42,21 +42,21 @@ public class Account {
         }
     }
 
-
-    public String getAccountNumber() {
-        return accountNumber;
+    public void deleteFromDatabase() {
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("DELETE FROM accounts WHERE account_number = ?")) {
+            stmt.setString(1, accountNumber);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    public String getPinCode() {
-        return pinCode;
-    }
-
-    public double getBalance() {
-        return balance;
-    }
-
-    public Bank getBank() {
-        return bank;
+    public void addMoney(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            updateDatabase();
+        }
     }
 
     public boolean withdrawFromAccount(double amount) {
@@ -77,5 +77,21 @@ public class Account {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public String getPinCode() {
+        return pinCode;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public Bank getBank() {
+        return bank;
     }
 }
