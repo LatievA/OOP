@@ -11,14 +11,14 @@ import java.sql.SQLException;
 
 public class ATMSystem extends JFrame {
     private JTextField accountNumberField, pinField, amountField;
-    private JButton withdrawButton, checkBalanceButton, addMoneyButton, addAccountButton, deleteAccountButton;
+    private JButton withdrawButton, checkBalanceButton, addMoneyButton, addAccountButton, deleteAccountButton, saveChangesButton,loadAccountsButton;
     private JTextArea outputArea;
     private Bank bank;
 
     public ATMSystem(Bank bank) {
         this.bank = bank;
         setTitle("ATM System");
-        setSize(400, 400);
+        setSize(400, 450);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new FlowLayout());
 
@@ -39,12 +39,16 @@ public class ATMSystem extends JFrame {
         addMoneyButton = new JButton("Add Money");
         addAccountButton = new JButton("Add Account");
         deleteAccountButton = new JButton("Delete Account");
+        saveChangesButton = new JButton("Save Changes");
+        loadAccountsButton = new JButton("Load Accounts");
 
         add(withdrawButton);
         add(checkBalanceButton);
         add(addMoneyButton);
         add(addAccountButton);
         add(deleteAccountButton);
+        add(saveChangesButton);
+        add(loadAccountsButton);
 
         outputArea = new JTextArea(5, 30);
         outputArea.setEditable(false);
@@ -55,8 +59,27 @@ public class ATMSystem extends JFrame {
         addMoneyButton.addActionListener(e -> addMoney());
         addAccountButton.addActionListener(e -> addAccount());
         deleteAccountButton.addActionListener(e -> deleteAccount());
+        saveChangesButton.addActionListener(e -> saveChangesToDatabase());
+        loadAccountsButton.addActionListener(e -> loadAccounts());
 
         setVisible(true);
+    }
+
+    private void loadAccounts() {
+        DatabaseManager.loadAccounts(bank);
+        outputArea.setText("Accounts loaded successfully from the database.");
+    }
+
+    public static JButton createLoadAccountsButton(Bank bank, JTextArea outputArea) {
+        JButton loadAccountsButton = new JButton("Load Accounts");
+        loadAccountsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DatabaseManager.loadAccounts(bank);
+                outputArea.setText("Accounts loaded successfully from the database.");
+            }
+        });
+        return loadAccountsButton;
     }
 
     private void withdrawMoney() {
@@ -67,6 +90,7 @@ public class ATMSystem extends JFrame {
         for (Account account : bank.getAccounts()) {
             if (account.getAccountNumber().equals(accountNumber) && account.getPinCode().equals(pin)) {
                 if (account.withdrawFromAccount(amount)) {
+                    DatabaseManager.saveAccountChanges(account.getAccountNumber(), account.getBalance());
                     outputArea.setText("Withdrawal successful! New balance: " + account.getBalance());
                 } else {
                     outputArea.setText("Insufficient funds.");
@@ -97,6 +121,7 @@ public class ATMSystem extends JFrame {
         for (Account account : bank.getAccounts()) {
             if (account.getAccountNumber().equals(accountNumber)) {
                 account.addMoney(amount);
+                DatabaseManager.saveAccountChanges(account.getAccountNumber(), account.getBalance());
                 outputArea.setText("Money added successfully! New balance: " + account.getBalance());
                 return;
             }
@@ -128,7 +153,21 @@ public class ATMSystem extends JFrame {
         outputArea.setText("Account not found.");
     }
 
+    private void saveChangesToDatabase() {
+        String accountNumber = accountNumberField.getText();
+
+        for (Account account : bank.getAccounts()) {
+            if (account.getAccountNumber().equals(accountNumber)) {
+                DatabaseManager.saveAccountChanges(account.getAccountNumber(), account.getBalance());
+                outputArea.setText("Account changes saved to database.");
+                return;
+            }
+        }
+        outputArea.setText("Account not found.");
+    }
+
     public static void main(String[] args) {
+        //DatabaseManager.initializeDatabase(); // Ensure the database is initialized
         Bank bank = new Bank("Global Bank");
         new ATMSystem(bank);
     }
